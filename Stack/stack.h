@@ -5,27 +5,29 @@
 using namespace std;
 
 // 定义链栈节点
+template <typename T>
 struct Node
 {
-    int data;
+    T data;
     Node *next;
 
-    Node(int val) : data(val), next(nullptr) {}
+    Node(T val) : data(val), next(nullptr) {}
 };
 
 // 定义链栈类
-class Stack
+template <typename T>
+class StackLink
 {
 private:
-    Node *top;
+    Node<T> *top;
     int size;
 
 public:
     // 初始化
-    Stack() : top(nullptr), size(0) {}
+    StackLink() : top(nullptr), size(0) {}
 
     // 销毁
-    ~Stack()
+    ~StackLink()
     {
         DestroyStack();
     }
@@ -45,7 +47,7 @@ public:
     }
 
     // 输出栈顶元素
-    int Top() const
+    int Top() 
     {
         if (IsEmpty())
         {
@@ -55,9 +57,9 @@ public:
     }
 
     // 入栈
-    void Push(int value)
+    void Push(T value)
     {
-        Node *newNode = new Node(value);
+        Node<T> *newNode = new Node<T>(value);
         newNode->next = top;
         top = newNode;
         size++;
@@ -70,7 +72,7 @@ public:
         {
             throw underflow_error("Stack is empty.");
         }
-        Node *temp = top;
+        Node<T> *temp = top;
         top = top->next;
         delete temp;
         size--;
@@ -82,4 +84,3 @@ public:
         return size;
     }
 };
-
