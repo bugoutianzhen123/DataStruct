@@ -122,7 +122,7 @@ int GetMin(vector<int> &num, int Index, int n)
 
 void LinearList()
 {
-    vector<int> num = {1, 5, 6, 12, 3, 1, 4, 7, 8, 3, 0};
+    vector<int> num = {1, 5, 6, 12, 3, 1, 4, 7, 8, 3};
     int max, min;
 
     max = GetMax(num, 0, num.size());
