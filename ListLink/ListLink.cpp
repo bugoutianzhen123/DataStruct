@@ -6,12 +6,12 @@ using namespace std;
 class List
 {
 public:
-	std::string name;
+	string name;
 	Node *head; // 头节点地址
 	int len;	// 链表长度
 public:
 	// 初始化
-	List(const std::string &objName)
+	List(const string &objName)
 	{
 		len = 0;
 		head = new Node;

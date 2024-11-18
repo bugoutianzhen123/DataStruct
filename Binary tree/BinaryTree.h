@@ -18,6 +18,11 @@ public:
 class BinaryTree
 {
 private:
+    enum ChildNode
+    {
+        Left,
+        Right,
+    };
     // 销毁一个节点及其所有子节点
     void DestroyTree(Node *node)
     {
@@ -59,15 +64,18 @@ private:
     }
 
     // 查找有指定子节点的节点
-    Node *FindChildNode(Node *node, int data, Node *target)
+    Node *FindChildNode(Node *node, int data)
     {
         if (node == nullptr)
             return nullptr;
-        if (data < node->Data)
-            return FindChildNode(node->Left, data, node);
-        if (data > node->Data)
-            return FindChildNode(node->Right, data, node);
-        return target;
+
+        if ((node->Left && node->Left->Data == data) || (node->Right && node->Right->Data == data))
+            return node;
+        Node *left = FindChildNode(node->Left, data);
+        if (left != nullptr)
+            return left;
+
+        return FindChildNode(node->Right, data);
     }
 
     // 获取树的深度
@@ -113,8 +121,8 @@ private:
         cout << node->Data << " ";
     }
 
-    // 广度优先
-    void LevelOrder()
+    // 广度优先插入
+    void LevelOrderInsert()
     {
         if (Root == nullptr)
             return;      // 如果树为空，直接返回
@@ -134,6 +142,79 @@ private:
         }
     }
 
+    // 根据先序，中序遍历的结果生成树
+    Node *BuildTreeFromArray(queue<int> *pre, vector<int> mid, int start, int end)
+    {
+        if (start > end)
+        {
+            return nullptr;
+        }
+        int data = pre->front();
+        pre->pop();
+
+        Node *node = new Node(data);
+        int RootIndex;
+        for (int i = start; i <= end; i++)
+        {
+            if (mid[i] == data)
+            {
+                RootIndex = i;
+                break;
+            }
+            RootIndex = -1;
+        }
+
+        node->Left = BuildTreeFromArray(pre, mid, start, RootIndex - 1);
+        node->Right = BuildTreeFromArray(pre, mid, RootIndex + 1, end);
+        return node;
+    }
+
+    //    Node *BuildTreeFromPre(queue<string> str){
+    //        if(str.empty()){
+    //            return nullptr;
+    //        }
+    //        string data = str.front();
+    //        str.pop();
+    //        if(data == "#"){
+    //            return nullptr;
+    //        }
+    //        Node *newNode = new Node()
+    //    }
+
+    // 交换所有子节点
+    void ExchangeChild(Node *node)
+    {
+        if (node == nullptr || (node->Left == nullptr && node->Right == nullptr))
+            return;
+        ExchangeChild(node->Left);
+        ExchangeChild(node->Right);
+        Node *temp;
+        temp = node->Left;
+        node->Left = node->Right;
+        node->Right = temp;
+    }
+
+    // 判断子树是否平衡，若不平衡则返回 -1，若平衡则返回树的高度
+    int CheckBalance(Node *root)
+    {
+        if (root == nullptr)
+            return 0;
+
+        int leftHeight = CheckBalance(root->Left);
+        if (leftHeight == -1)
+            return -1;
+
+        int rightHeight = CheckBalance(root->Right);
+        if (rightHeight == -1)
+            return -1;
+
+        if (abs(leftHeight - rightHeight) > 1)
+            return -1;
+
+        // 返回当前节点的高度
+        return max(leftHeight, rightHeight) + 1;
+    }
+
 public:
     Node *Root;
     BinaryTree() : Root(nullptr) {}
@@ -141,6 +222,7 @@ public:
     ~BinaryTree()
     {
         DestroyTree(Root);
+        cout << "the tree was deleted" << endl;
     }
 
     // 判断是否为空
@@ -149,7 +231,7 @@ public:
         return Root == nullptr;
     }
 
-    // 插入数据
+    // 二分插入数据
     BinaryTree &Insert(int data)
     {
         InsertOrder(Root, data);
@@ -170,11 +252,11 @@ public:
         Node *node = FindNode(Root, e)->Left;
         if (node == nullptr)
         {
-            printf("no left child");
+            printf("no left child\n");
         }
         else
         {
-            printf("the left child is %d", node->Data);
+            printf("the %d's left child is %d\n", e, node->Data);
         }
         return node;
     }
@@ -185,11 +267,11 @@ public:
         Node *node = FindNode(Root, e)->Right;
         if (node == nullptr)
         {
-            printf("no right child");
+            printf("no right child\n");
         }
         else
         {
-            printf("the right child is %d", node->Data);
+            printf("the %d's right child is %d\n", e, node->Data);
         }
         return node;
     }
@@ -197,14 +279,14 @@ public:
     // 获取双亲
     Node *GetParent(int e)
     {
-        Node *node = FindChildNode(Root, e, nullptr);
+        Node *node = FindChildNode(Root, e);
         if (node == nullptr)
         {
-            printf("no parent");
+            printf("no parent\n");
         }
         else
         {
-            printf("the parent is %d", node->Data);
+            printf("the %d's parent is %d\n", e, node->Data);
         }
         return node;
     }
@@ -213,7 +295,15 @@ public:
     Node *GetLeftBrother(int e)
     {
         Node *node;
-        node = FindChildNode(Root, e, nullptr);
+        node = FindChildNode(Root, e);
+        if (node == nullptr)
+        {
+            printf("no left brother\n");
+        }
+        else
+        {
+            printf("the %d's left brother is %d\n", e, node->Left->Data);
+        }
         return node->Left;
     }
 
@@ -221,7 +311,15 @@ public:
     Node *GetRightBrother(int e)
     {
         Node *node;
-        node = FindChildNode(Root, e, nullptr);
+        node = FindChildNode(Root, e);
+        if (node == nullptr)
+        {
+            printf("no right brother\n");
+        }
+        else
+        {
+            printf("the %d's right brother is %d\n", e, node->Right->Data);
+        }
         return node->Right;
     }
 
@@ -257,20 +355,85 @@ public:
         if (LR == 0)
         {
             DestroyTree(node->Left);
+            node->Left = nullptr;
             return *this;
         }
         else if (LR == 1)
         {
             DestroyTree(node->Right);
+            node->Right = nullptr;
             return *this;
         }
         return *this;
     }
 
     // 遍历
-    BinaryTree &Traverse()
+    enum TraverseMeth
     {
-        PreTraverse(Root);
+        pre,
+        mid,
+        po,
+        level
+    };
+
+    // 根据指定方法遍历
+    BinaryTree &Traverse(TraverseMeth arg = pre)
+    {
+        switch (arg)
+        {
+        case pre:
+            PreTraverse(Root);
+            cout << endl;
+            return *this;
+        case mid:
+            MidTraverse(Root);
+            cout << endl;
+            return *this;
+        case po:
+            PoTraverse(Root);
+            cout << endl;
+            return *this;
+
+        case level:
+            return *this;
+        default:
+            cout << "this traverse type is wrong" << endl;
+            return *this;
+        }
+    }
+    // 根据线序遍历与中序遍历的结果生成树
+    BinaryTree &BuildTreeFromTraverse(vector<int> PreArr, vector<int> MidArr)
+    {
+        queue<int> pre;
+        for (int data : PreArr)
+        {
+            pre.push(data);
+        }
+
+        Root = BuildTreeFromArray(&pre, MidArr, 0, MidArr.size() - 1);
         return *this;
+    }
+
+    // 交换所有子节点
+    BinaryTree &ExchangeChild()
+    {
+        ExchangeChild(Root);
+        return *this;
+    }
+
+    // 判断是否平衡
+    void IfBlance()
+    {
+        int i = CheckBalance(Root);
+        if (i == -1)
+        {
+            cout << "this tree  isn't blance" << endl;
+            return;
+        }
+        else
+        {
+            cout << "this tree  is blance" << endl;
+            return;
+        }
     }
 };

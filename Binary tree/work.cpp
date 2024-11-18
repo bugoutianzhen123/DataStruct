@@ -3,5 +3,8 @@
 int main()
 {
     Test();
+    // GetTreeFromArray();
+    // Blance();
+    // the4();
     return 0;
 }
