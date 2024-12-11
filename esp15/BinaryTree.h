@@ -5,11 +5,12 @@ using namespace std;
 class Node
 {
 public:
+    int Weight;
     int Data;
     Node *Left;
     Node *Right;
 
-    Node(int data) : Data(data), Left(nullptr), Right(nullptr) {}
+    Node(int data, int weight = 0) : Weight(weight), Data(data), Left(nullptr), Right(nullptr) {}
 };
 
 class BinaryTree
@@ -30,19 +31,19 @@ private:
         delete node;
     }
     // 插入
-    void InsertOrder(Node *&node, int data)
+    void InsertOrder(Node *&node, int data, int weight)
     {
         if (node == nullptr)
         {
-            node = new Node(data); // 创建新节点
+            node = new Node(data, weight); // 创建新节点
         }
         else if (data < node->Data)
         {
-            InsertOrder(node->Left, data); // 插入到左子树
+            InsertOrder(node->Left, data, weight); // 插入到左子树
         }
         else if (data > node->Data)
         {
-            InsertOrder(node->Right, data); // 插入到右子树
+            InsertOrder(node->Right, data, weight); // 插入到右子树
         }
         // 如果 data == node->Data, 可以选择不做插入（避免重复值）
     }
@@ -330,6 +331,17 @@ private:
         }
     }
 
+    int wpl(Node *node, int depth)
+    {
+        if (!node)
+            return 0;
+        if (!node->Left && !node->Right)
+        {
+            return depth * node->Weight;
+        }
+        return (wpl(node->Left, depth + 1) + wpl(node->Right, depth + 1));
+    }
+
 public:
     Node *Root;
     BinaryTree() : Root(nullptr) {}
@@ -346,9 +358,9 @@ public:
         return Root == nullptr;
     }
     // 二分插入数据
-    BinaryTree &Insert(int data)
+    BinaryTree &Insert(int data, int weight = 0)
     {
-        InsertOrder(Root, data);
+        InsertOrder(Root, data, weight);
         return *this;
     }
     // 获取深度
@@ -545,5 +557,10 @@ public:
         // PrintTree(Root);
         show(Root);
         return *this;
+    }
+    // 带权路径长度
+    int WPL()
+    {
+        return wpl(Root, 0);
     }
 };

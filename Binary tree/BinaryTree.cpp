@@ -20,24 +20,27 @@ void Test()
     //    1   7     20
     //     \        /
     //      2       15
+    tree.Print();
+    // tree.Traverse();
+    tree.Traverse(tree.level);
 
-    if (tree.EmptyTree())
-    {
-        cout << "it's empty" << endl;
-    }
-    else
-    {
-        cout << "it isn't empty" << endl;
-    }
+    // if (tree.EmptyTree())
+    // {
+    //     cout << "it's empty" << endl;
+    // }
+    // else
+    // {
+    //     cout << "it isn't empty" << endl;
+    // }
 
-    cout << "preTraverse:";
-    tree.Traverse();
-    tree.Traverse(tree.mid);
+    // cout << "preTraverse:";
+    // tree.Traverse();
+    // tree.Traverse(tree.mid);
 
-    cout << "it's depth is" << tree.GetTreeDepth() << endl;
-    tree.GetLeftChild(5);
-    tree.GetRightChild(5);
-    tree.GetParent(20);
+    // cout << "it's depth is" << tree.GetTreeDepth() << endl;
+    // tree.GetLeftChild(5);
+    // tree.GetRightChild(5);
+    // tree.GetParent(20);
     // tree.GetLeftBrother(5);
     // tree.GetRightBrother(5);
 
