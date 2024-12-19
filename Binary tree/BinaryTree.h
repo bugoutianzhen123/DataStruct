@@ -29,7 +29,7 @@ private:
         DestroyTree(node->Right);
         delete node;
     }
-    // 插入
+    // 二分插入
     void InsertOrder(Node *&node, int data)
     {
         if (node == nullptr)
